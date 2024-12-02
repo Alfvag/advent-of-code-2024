@@ -40,5 +40,25 @@ public class App {
         }
 
         System.out.println("Total difference: " + totalDifference);
+
+        /*
+         * Part 2
+        */
+
+        int similarityScore = 0;
+
+        for (int i = 0; i < list1.size(); i++) {
+            int appearance = 0;
+
+            for (int j = 0; j < list2.size(); j++) {
+                if (list1.get(i).equals(list2.get(j))) {
+                    appearance++;
+                }
+            }
+
+            similarityScore += (list1.get(i) * appearance);
+        }
+
+        System.out.println("Similarity score: " + similarityScore);
     }
 }
