@@ -1,5 +1,7 @@
-import java.util.*;
-import java.io.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) throws Exception {
@@ -12,12 +14,18 @@ public class App {
 
             while (scanner.hasNextLine()) {
                 String data = scanner.nextLine();
-                System.out.println(data);
 
-                String[] level = data.split(" ");
+                ArrayList<String> levelString = new ArrayList<>(Arrays.asList(data.split(" ")));
+                ArrayList<Integer> levelInt = new ArrayList<>();
 
-                if (isSafe(level)) {
-                    if (isDecreasing(level) || isIncreasing(level)) {
+                for (String s : levelString) {
+                    levelInt.add(Integer.parseInt(s));
+                }
+
+                if (isSafe(levelInt) && (isDecreasing(levelInt) || isIncreasing(levelInt))) {
+                    safeReports++;
+                } else {
+                    if (problemDampener(levelInt)) {
                         safeReports++;
                     }
                 }
@@ -31,47 +39,42 @@ public class App {
         System.out.println("There are " + safeReports + " safe reports.");
     }
 
-    public static boolean isDecreasing(String[] level) {
-        boolean isDecreasing = false;
-
-        for (int i = 1; i < level.length; i++) {
-            if (Integer.parseInt(level[i]) < Integer.parseInt(level[i - 1])) {
-                isDecreasing = true;
-            } else {
+    public static boolean isSafe(ArrayList<Integer> levels) {
+        for (int i = 1; i < levels.size(); i++) {
+            int diff = Math.abs(levels.get(i) - levels.get(i - 1));
+            if (diff < 1 || diff > 3) {
                 return false;
             }
         }
-
-        return isDecreasing;
-    }
-
-    public static boolean isIncreasing(String[] level) {
-        boolean isIncreasing = false;
-
-        for (int i = 1; i < level.length; i++) {
-            if (Integer.parseInt(level[i]) > Integer.parseInt(level[i - 1])) {
-                isIncreasing = true;
-            } else {
-                return false;
-            }
-        }
-
-        return isIncreasing;
-    }
-
-    public static boolean isSafe(String[] level) {
-        for (int i = 1; i < level.length; i++) {
-            int step = Integer.parseInt(level[i]) - Integer.parseInt(level[i - 1]);
-
-            if (step < 0) {
-                step = step * -1;
-            }
-
-            if (step < 1 || step > 3) {
-                return false;
-            }
-        }
-
         return true;
+    }
+
+    public static boolean isDecreasing(ArrayList<Integer> levels) {
+        for (int i = 1; i < levels.size(); i++) {
+            if (levels.get(i - 1) <= levels.get(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean isIncreasing(ArrayList<Integer> levels) {
+        for (int i = 1; i < levels.size(); i++) {
+            if (levels.get(i - 1) >= levels.get(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean problemDampener(ArrayList<Integer> levels) {
+        for (int i = 0; i < levels.size(); i++) {
+            ArrayList<Integer> modifiedLevels = new ArrayList<>(levels);
+            modifiedLevels.remove(i);
+            if (isSafe(modifiedLevels) && (isDecreasing(modifiedLevels) || isIncreasing(modifiedLevels))) {
+                return true;
+            }
+        }
+        return false;
     }
 }
